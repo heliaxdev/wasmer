@@ -19,30 +19,31 @@
 //! Ready?
 
 use wasmer::{imports, wat2wasm, Instance, Module, Store, Value};
-use wasmer_compiler_cranelift::Cranelift;
+use wasmer_compiler_singlepass::Singlepass;
 use wasmer_engine_dylib::Dylib;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Let's declare the Wasm module with the text representation.
-    let wasm_bytes = wat2wasm(
-        r#"
-(module
-  (type $sum_t (func (param i32 i32) (result i32)))
-  (func $sum_f (type $sum_t) (param $x i32) (param $y i32) (result i32)
-    local.get $x
-    local.get $y
-    i32.add)
-  (export "sum" (func $sum_f)))
-"#
-        .as_bytes(),
-    )?;
+//     let wasm_bytes = wat2wasm(
+//         r#"
+// (module
+//   (type $sum_t (func (param i32 i32) (result i32)))
+//   (func $sum_f (type $sum_t) (param $x i32) (param $y i32) (result i32)
+//     local.get $x
+//     local.get $y
+//     i32.add)
+//   (export "sum" (func $sum_f)))
+// "#
+//         .as_bytes(),
+//     )?;
+    let wasm_bytes = include_bytes!("rust_to_wasm.wasm");
 
     // Define a compiler configuration.
     //
     // In this situation, the compiler is
     // `wasmer_compiler_cranelift`. The compiler is responsible to
     // compile the Wasm module into executable code.
-    let compiler_config = Cranelift::default();
+    let compiler_config = Singlepass::default();
 
     println!("Creating Dylib engine...");
     // Define the engine that will drive everything.

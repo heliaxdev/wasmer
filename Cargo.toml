@@ -58,6 +58,9 @@ members = [
     "tests/integration/ios",
     "fuzz",
 ]
+exclude = [
+    "examples/rust_to_wasm",
+]
 resolver = "2"
 
 [build-dependencies]
@@ -177,7 +180,7 @@ required-features = ["cranelift"]
 [[example]]
 name = "engine-dylib"
 path = "examples/engine_dylib.rs"
-required-features = ["cranelift"]
+required-features = ["singlepass"]
 
 [[example]]
 name = "engine-headless"
