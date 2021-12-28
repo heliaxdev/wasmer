@@ -177,7 +177,7 @@ required-features = ["cranelift"]
 [[example]]
 name = "engine-dylib"
 path = "examples/engine_dylib.rs"
-required-features = ["cranelift"]
+required-features = ["cranelift", "cache"]
 
 [[example]]
 name = "engine-headless"

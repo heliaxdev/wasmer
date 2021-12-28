@@ -21,8 +21,13 @@
 use wasmer::{imports, wat2wasm, Instance, Module, Store, Value};
 use wasmer_compiler_cranelift::Cranelift;
 use wasmer_engine_dylib::Dylib;
+use wasmer_cache::{Cache, FileSystemCache, Hash};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let dir = tempfile::tempdir()?;
+    // Create a new file system cache.
+    let mut fs_cache = FileSystemCache::new(dir.path())?;
+
     // Let's declare the Wasm module with the text representation.
     let wasm_bytes = wat2wasm(
         r#"
@@ -36,6 +41,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 "#
         .as_bytes(),
     )?;
+
+    // Compute a key for a given WebAssembly binary
+    let hash = Hash::generate(&wasm_bytes);
 
     // Define a compiler configuration.
     //
@@ -75,6 +83,21 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let instance = Instance::new(&module, &import_object)?;
 
     println!("Calling `sum` function...");
+    // The Wasm module exports a function called `sum`.
+    let sum = instance.exports.get_function("sum")?;
+    let results = sum.call(&[Value::I32(1), Value::I32(2)])?;
+
+    println!("Results: {:?}", results);
+    assert_eq!(results.to_vec(), vec![Value::I32(3)]);
+
+
+    // Store a module into the cache given a key
+    fs_cache.store(hash, &module)?;
+
+    let loaded_module = unsafe {fs_cache.load(&store, hash) }?;
+    let instance = Instance::new(&loaded_module, &import_object)?;
+
+    println!("Calling `sum` function from a re-loaded module...");
     // The Wasm module exports a function called `sum`.
     let sum = instance.exports.get_function("sum")?;
     let results = sum.call(&[Value::I32(1), Value::I32(2)])?;
