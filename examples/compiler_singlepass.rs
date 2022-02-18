@@ -42,19 +42,21 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Create an empty import object.
     let import_object = imports! {};
 
-    println!("Instantiating module...");
-    // Let's instantiate the Wasm module.
-    let instance = Instance::new(&module, &import_object)?;
+    for _ in  ..10000 {
+      println!("Instantiating module...");
+      // Let's instantiate the Wasm module.
+      let instance = Instance::new(&module, &import_object)?;
 
-    let sum = instance.exports.get_function("sum")?;
+      let sum = instance.exports.get_function("sum")?;
 
-    println!("Calling `sum` function...");
-    // Let's call the `sum` exported function. The parameters are a
-    // slice of `Value`s. The results are a boxed slice of `Value`s.
-    let results = sum.call(&[Value::I32(1), Value::I32(2)])?;
+      println!("Calling `sum` function...");
+      // Let's call the `sum` exported function. The parameters are a
+      // slice of `Value`s. The results are a boxed slice of `Value`s.
+      let results = sum.call(&[Value::I32(1), Value::I32(2)])?;
 
-    println!("Results: {:?}", results);
-    assert_eq!(results.to_vec(), vec![Value::I32(3)]);
+      println!("Results: {:?}", results);
+      assert_eq!(results.to_vec(), vec![Value::I32(3)]);
+    }
 
     Ok(())
 }
