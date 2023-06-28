@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":[["Target",""]],"fn":[["lookup_bindings_for_package",""]],"struct":[["Add","Add a Wasmer package’s bindings to your application."]]};
