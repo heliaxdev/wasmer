@@ -216,7 +216,9 @@ cfg_if::cfg_if! {
                 }
                 _ => None,
             };
-            let ucontext = &mut *(context as *mut libc::ucontext_t);
+            let ucontext_ptr = context as *mut libc::ucontext_t;
+            let ucontext_addr = ptr::addr_of!(ucontext_ptr);
+            let ucontext = &mut *read_unaligned(ucontext_addr);
             let (pc, sp) = get_pc_sp(ucontext);
             let handled = TrapHandlerContext::handle_trap(
                 pc,
