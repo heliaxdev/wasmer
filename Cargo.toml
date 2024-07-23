@@ -350,3 +350,8 @@ required-features = ["cranelift"]
 name = "http-dynamic-size"
 path = "examples/http_dynamic_size.rs"
 required-features = ["cranelift"]
+
+[[example]]
+name = "invalid-memory-access"
+path = "examples/invalid_memory_access.rs"
+required-features = ["singlepass"]
